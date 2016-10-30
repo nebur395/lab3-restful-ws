@@ -337,6 +337,12 @@ public class AddressBookServiceTest {
 		// test that it is idempotent
 		//////////////////////////////////////////////////////////////////////	
 
+		// since /person/2 has been deleted, DELETE /contacts/person/2 must return a 404 http
+		// code (Not Found) to verify that it is idempotent.
+		response = client
+				.target("http://localhost:8282/contacts/person/2").request()
+				.delete();
+		assertEquals(404, response.getStatus());
 	}
 
 	@Test
