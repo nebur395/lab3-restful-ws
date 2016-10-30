@@ -287,7 +287,22 @@ public class AddressBookServiceTest {
 		//////////////////////////////////////////////////////////////////////
 		// Verify that PUT /contacts/person/2 is well implemented by the service, i.e
 		// test that it is idempotent
-		//////////////////////////////////////////////////////////////////////	
+		//////////////////////////////////////////////////////////////////////
+
+		/*
+		 * check that a double put over the same path with the same parameters returns the same
+		 * entity
+		 */
+		Response newResponse = client
+				.target("http://localhost:8282/contacts/person/2")
+				.request(MediaType.APPLICATION_JSON)
+				.put(Entity.entity(maria, MediaType.APPLICATION_JSON));
+		assertEquals(200, newResponse.getStatus());
+		assertEquals(MediaType.APPLICATION_JSON_TYPE, newResponse.getMediaType());
+		Person mariaUpdated = newResponse.readEntity(Person.class);
+		assertEquals(mariaRetrieved.getName(), mariaUpdated.getName());
+		assertEquals(mariaRetrieved.getId(), mariaUpdated.getId());
+		assertEquals(mariaRetrieved.getHref(), mariaUpdated.getHref());
 	
 	}
 
