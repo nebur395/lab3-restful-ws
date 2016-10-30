@@ -215,7 +215,26 @@ public class AddressBookServiceTest {
 		//////////////////////////////////////////////////////////////////////
 		// Verify that POST is well implemented by the service, i.e
 		// test that it is not safe and not idempotent
-		//////////////////////////////////////////////////////////////////////	
+		//////////////////////////////////////////////////////////////////////
+
+		// add juan again
+		Response newResponse = client.target("http://localhost:8282/contacts")
+				.request(MediaType.APPLICATION_JSON)
+				.post(Entity.entity(juan, MediaType.APPLICATION_JSON));
+
+		// test list of contacts with the new one added
+		newResponse = client.target("http://localhost:8282/contacts")
+				.request(MediaType.APPLICATION_JSON).get();
+		assertEquals(200, response.getStatus());
+		assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getMediaType());
+		addressBookRetrieved = newResponse
+				.readEntity(AddressBook.class);
+
+		assertNotEquals(2, addressBookRetrieved.getPersonList().size());
+		assertNotEquals(addressBookRetrieved.getPersonList().get(1).getId(),
+				addressBookRetrieved.getPersonList().get(2).getId());
+		assertNotEquals(addressBookRetrieved.getPersonList().get(1).getHref(),
+				addressBookRetrieved.getPersonList().get(2).getHref());
 	
 	}
 
