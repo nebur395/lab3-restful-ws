@@ -96,3 +96,11 @@ local.properties
 
 # Code Recommenders
 .recommenders/
+
+# custom ignores
+.gradle
+.idea
+build
+gradle
+gradlew
+gradlew.bat
