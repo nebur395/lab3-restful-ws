@@ -20,6 +20,7 @@ import rest.addressbook.domain.AddressBook;
 import rest.addressbook.domain.Person;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * A simple test suite
@@ -98,8 +99,25 @@ public class AddressBookServiceTest {
 		//////////////////////////////////////////////////////////////////////
 		// Verify that POST /contacts is well implemented by the service, i.e
 		// test that it is not safe and not idempotent
-		//////////////////////////////////////////////////////////////////////	
-				
+		//////////////////////////////////////////////////////////////////////
+
+		//check that the person is created but isn't the same
+		Response newResponse = client.target("http://localhost:8282/contacts")
+				.request(MediaType.APPLICATION_JSON)
+				.post(Entity.entity(juan, MediaType.APPLICATION_JSON));
+		assertEquals(201, newResponse.getStatus());
+		assertNotEquals(juanURI, newResponse.getLocation());
+		assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getMediaType());
+		juanUpdated = newResponse.readEntity(Person.class);
+		assertEquals(juan.getName(), juanUpdated.getName());
+		assertNotEquals(1, juanUpdated.getId());
+		assertNotEquals(juanURI, juanUpdated.getHref());
+
+		// check that the person list has changed by adding one person to the list
+		newResponse = client.target("http://localhost:8282/contacts").request().get();
+		assertEquals(200,newResponse.getStatus());
+		assertEquals(2,newResponse.readEntity(AddressBook.class).getPersonList().size());
+
 	}
 
 	@Test
